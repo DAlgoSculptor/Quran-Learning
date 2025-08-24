@@ -102,10 +102,16 @@ export default function SettingsPage() {
   })
 
   const toggleSetting = (settingId: string) => {
-    setSettings(prev => ({
-      ...prev,
-      [settingId]: !prev[settingId as keyof typeof prev]
-    }))
+    setSettings(prev => {
+      const currentValue = prev[settingId as keyof typeof prev]
+      if (typeof currentValue === 'boolean') {
+        return {
+          ...prev,
+          [settingId]: !currentValue
+        }
+      }
+      return prev
+    })
   }
 
   const renderSettingControl = (setting: any) => {
@@ -147,9 +153,9 @@ export default function SettingsPage() {
       
       case "select":
         return (
-          <select 
+          <select
             className="px-3 py-1 border rounded-md bg-background text-foreground"
-            value={settings[setting.id as keyof typeof settings]}
+            value={String(settings[setting.id as keyof typeof settings] || setting.value || "")}
             onChange={(e) => setSettings(prev => ({ ...prev, [setting.id]: e.target.value }))}
           >
             {setting.options.map((option: string) => (
